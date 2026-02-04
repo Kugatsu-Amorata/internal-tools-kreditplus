@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internal Tools KreditPlus</title>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+/* ================= GLOBAL ================= */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+/* ================= NAVBAR ================= */
+nav {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  padding: 12px 20px;
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+nav button {
+  background: none;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 6px 12px;
+}
+
+nav button.active {
+  border-bottom: 2px solid #2563EB;
+  font-weight: bold;
+  color: #2563EB;
+}
+
+/* ================= PAGE ================= */
+.page {
+  display: none;
+  padding: 20px;
+}
+.page.active {
+  display: block;
+}
+/* ===== BACKGROUND PER HALAMAN ===== */
+.page {
+  min-height: calc(100vh - 60px);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Shortcut → suasana kantor */
+.page-shortcut {
+  background-image: url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d");
+}
+
+/* Data Karyawan → alam / hutan */
+.page-karyawan {
+  background-image: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470");
+}
+
+/* Overlay biar teks kebaca */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15),
+    rgba(0,0,0,0.35)
+  );
+  z-index: 0;
+}
+
+.page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================= DATA KARYAWAN ================= */
+h1 { color: #5C6AC4; }
+input {
+  padding: 6px;
+  font-size: 14px;
+  width: 300px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 15px;
+
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(2px);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  background: #5C6AC4;
+  color: #fff;
+}
+
+/* ================= SHORTCUT APP ================= */
+.shortcut-wrap {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  background: #ffffff;
+  width: 100%;
+  max-width: 640px;
+  padding: 26px;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  border-top: 6px solid #2563EB;
+}
+/* ===== TITLE & BRAND ===== */
+.title-center {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.title-center .brand {
+  margin-left: 6px;
+  font-weight: bold;
+}
+
+.title-center .kredit {
+  color: #2563EB; /* biru */
+}
+
+.title-center .plus {
+  color: #DC2626; /* merah */
+}
+
+/* ===== DATETIME ===== */
+.datetime {
+  text-align: center;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+    
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.result {
+  background: #F3F4F6;
+  padding: 16px;
+  border-radius: 10px;
+  min-height: 140px;
+  white-space: pre-line;
+}
+
+.history span {
+  display: inline-block;
+  background: #e5e7eb;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.history span:hover {
+  background: #2563eb;
+  color: #fff;
+}
+    #copyStatus {
+  display: none;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16A34A;
+}
+/* ============== SHORTCUT APP ================= */
+.shortcut-wrap {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.app {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;   /* ⬅️ dari 640 jadi 520 */
+  padding: 20px;     /* ⬅️ dari 26 jadi 20 */
+  border-radius: 14px;
+  box-shadow: 0 16px 32px rgba(0,0,0,0.18);
+  border-top: 6px solid #2563EB;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <button class="active" onclick="showPage('home', this)">Home</button>
+  <button onclick="showPage('karyawan', this)">Data Karyawan</button>
+  <button onclick="showPage('shortcut', this)">Shortcut</button>
+  <button onclick="showPage('cabang', this)">Data Cabang</button>  
+</nav>
+
+<section id="home" class="page active">
+  <h2>Dashboard Internal KreditPlus</h2>
+  <p>Gunakan menu di atas untuk mengakses Data Karyawan dan Shortcut Contact Center.</p>
+</section>
+
+<section id="karyawan" class="page page-karyawan">
+  <h1>Data Karyawan</h1>
+  <input type="file" id="csvFile" accept=".csv"><br><br>
+  <input type="search" id="searchInput" placeholder="Cari NIK / Nama / Cabang / Jabatan" disabled>
+  <div id="info" style="margin-top:10px;font-weight:bold;"></div>
+
+  <table id="table" style="display:none;">
+    <thead>
+      <tr>
+        <th>NIK</th>
+        <th>Nama</th>
+        <th>Cabang</th>
+        <th>Jabatan</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section id="shortcut" class="page page-shortcut">
+  <div class="shortcut-wrap">
+    <div class="app">
+
+      <h2 class="title-center">
+  Contact Center
+  <span class="brand">
+    <span class="kredit">Kredit</span><span class="plus">Plus</span>
+  </span>
+</h2>
+
+<div class="datetime" id="datetime"></div>
+
+      <div class="input-group">
+        <input id="keyword" placeholder="Ketik shortcut, contoh: w1" />
+        <button class="btn-primary" onclick="search()">Cari</button>
+      </div>
+
+      <div class="result" id="result">
+        Ketik shortcut lalu tekan Enter.
+      </div>
+
+      <div class="actions">
+        <button class="btn-copy" onclick="copyResult()">Copy Hasil</button>
+        <span id="copyStatus">✓ Otomatis disalin</span>
+      </div>
+
+      <div class="history" id="history"></div>
+
+    </div>
+  </div>
+</section>
+    
+<section id="cabang" class="page">
+  <h1>Data Cabang KreditPlus</h1>
+
+  <input type="search" id="searchCabang"
+         placeholder="Cari Cabang / Alamat / Area">
+
+  <table id="tableCabang">
+    <thead>
+      <tr>
+        <th>Cabang</th>
+        <th>Alamat</th>
+        <th>Telepon</th>
+        <th>Area</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ========== DATA KARYAWAN LOGIC ========== */
+const fileInput = document.getElementById('csvFile');
+const searchInput = document.getElementById('searchInput');
+const table = document.getElementById('table');
+const tbody = table.querySelector('tbody');
+const info = document.getElementById('info');
+let data = [];
+
+function clean(text) {
+  return (text || '').toLowerCase().replace(/[,\.]/g,'').trim();
+}
+
+function render(rows) {
+  tbody.innerHTML = '';
+  if (!rows.length) {
+    table.style.display = 'none';
+    info.textContent = 'Data tidak ditemukan';
+    return;
+  }
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.nik}</td><td>${r.nama}</td><td>${r.cabang}</td><td>${r.jabatan}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.style.display = '';
+  info.textContent = `Jumlah data ditemukan: ${rows.length}`;
+}
+
+fileInput.addEventListener('change', e => {
+  Papa.parse(e.target.files[0], {
+    skipEmptyLines: true,
+    complete: res => {
+      data = res.data.slice(1).map(r => ({ nik:r[0], nama:r[1], cabang:r[2], jabatan:r[3] }));
+      searchInput.disabled = false;
+      info.textContent = 'Silakan ketik untuk mencari data';
+    }
+  });
+});
+
+searchInput.addEventListener('input', e => {
+  const term = clean(e.target.value);
+  if (!term) {
+    table.style.display = 'none';
+    info.textContent = 'Silakan ketik untuk mencari data';
+    return;
+  }
+  render(data.filter(r => clean(r.nik).includes(term) || clean(r.nama).includes(term) || clean(r.cabang).includes(term) || clean(r.jabatan).includes(term)));
+});
+
+/* ========== SHORTCUT LOGIC (SINGKAT) ========== */
+const shortcuts = { "u1": `Update,
+Data Lama :
+Data Baru :`,
+
+  "peng": `Untuk pengaduan yang telah kakak sampaikan, Kami buatkan pelaporan:
+Pada hari {{Hari}}, {{Tanggal}} 2026.
+Terkait pengaduan kakak perihal {{perihal}},
+Kami bantu tindak lanjuti ke team terkait dengan nomor pelaporan:{{nomor_Pelpaoran}}
+Dengan estimasi penanganan pengaduan 5-10 Hari Kerja.
+Apakah informasi yang kami sampaikan sudah cukup jelas ? atau apakah mungkin ada hal lain yang dapat kami bantu?`,
+
+  "p2": `Perubahan Nomor Telphone,`,
+
+  "c2": `Jika ada pertanyaan lain, silahkan menghubungi kami kembali di Layanan :
+
+📞 Call Center 1500605 atau 021-1500605
+✆ WhatsApp Chat 08118300605
+✉️ Email cs@kreditplus.com
+
+🕛 Jam Operasional :
+Senin - Jum'at
+08.00 WIB - 16.00 WIB
+
+Sabtu
+08.00 WIB - 13.00 WIB
+
+Tanggal Merah / Hari Libur Nasional
+Tidak Beroperasional
+
+Terima kasih telah menghubungi Layanan Hello KreditPlus.
+KreditPlus
+Solusi Kebutuhan Anda`,
+
+  "l1": `Selamat datang di Layanan Live Chat Hello KreditPlus.
+Saya Adit, siap membantu memberikan informasi yang Anda butuhkan.
+
+Mohon maaf dengan siapa kami terhubung saat ini?
+Perihal apa yang dapat kami bantu?`,
+
+  "n1": `Kami lakukan pengecekan data kakak terdaftar pada nomor telphone {{nomor_handphone}} ini.
+Apabila nomor telphone tersebut sudah tidak aktif silakan kakak menghubungi
+Call Center 1500605 atau 021-1500605
+untuk dilakukan perubahan data pada nomor telphonennya.`,
+
+  "-bung": `Kisaran Suku Bunga KreditPlus :
+🛋️ White Goods & Digital Equipment : 1,99% s.d 2,75% per-bulan
+🛵 Pembiayaan Agunan Motor : 2,6% s.d 2,99% per-bulan
+🚙 Pembiayaan Agunan Mobil : 1,1% s.d 1,6% per-bulan
+
+Catatan :
+Suku bunga dapat berubah mengikuti promo atau program yang sedang berlangsung.`,
+
+  "kmb2": `Baik pengajuan kakak sudah kami teruskan ke tim terkait.
+Diestimasikan pada hari ini atau esok hari akan ada yang menghubungi kakak
+perihal proses pengajuannya.
+Mohon kesediannya menunggu dan pastikan nomor handphone aktif.`,
+
+  "k1": `Mohon maaf atas ketidaknyamanannya.
+Saat ini kendala sedang kami koordinasikan dengan tim terkait.
+Estimasi penanganan 30 Menit - 1 jam ke depan.
+
+Mohon nantinya lakukan relogin atau logout akun kembali.
+
+Nomor tiket pelaporan:{{Nomor_Pelaporan}}`,
+
+  "w1": `Selamat datang di Layanan WhatsApp Hello KreditPlus.
+Saya Aditya, siap membantu memberikan informasi yang Anda butuhkan.
+
+Mohon maaf dengan siapa kami terhubung saat ini?
+Perihal apa yang dapat kami bantu?`,
+
+  "c1": `Apakah ada hal lain yang dapat kami bantu?`,
+
+  "kmb1": `Kami informasikan pengajuan dana tunai dapat dilakukan dengan
+menjaminkan BPKB kendaraan (motor & mobil).
+
+Apabila berminat, mohon melengkapi data berikut :
+
+Nama Lengkap :
+Alamat Tinggal :
+Jenis Kendaraan :
+Tahun Kendaraan :
+Nomor HP :
+Bersedia dihubungi kembali (Ya / Tidak)`,
+
+  "ren1": `Silakan melakukan pengisian data pembaruan limit melalui aplikasi KreditPlus Mobile.
+
+Pastikan pengisian dilakukan saat kakak berada di kantor cabang, karena akan muncul kode aktivasi pada aplikasi yang perlu diinformasikan kepada petugas cabang`,
+
+  "-pay": `Pembayaran angsuran dapat dilakukan melalui channel berikut :
+  
+▫️ Aplikasi KreditPlus Mobile (VA BCA, BRI, BNI, Mandiri, Permata)
+▫️ ATM BCA, BRI, BNI, Mandiri, Permata
+▫️ Tokopedia
+▫️ LinkAja
+▫️ OVO
+▫️ DANA
+▫️ Alfamart & Indomaret
+▫️ Kantor POS
+▫️ ShopeePay
+▫️ Kantor Cabang KreditPlus terdekat`,
+
+  "r1": `Kami informasikan mohon maaf atas ketidaknyamanannya.
+Hasil akhir pengajuan merupakan keputusan dari tim Credit Analyst
+dan bersifat Confidential.`,
+
+  "area1": `Mohon maaf atas kendala dan ketidaknyamannya.
+Untuk saat ini wilayah Jabodetabek sedang stop selling
+sehingga belum dapat dilakukan pengajuan unit barang,
+dikarenakan adanya peningkatan zona.`,
+
+  "-area": `Mohon maaf atas ketidaknyamanannya.
+Beberapa wilayah memang belum ter-cover pembiayaan KreditPlus.
+Kakak tetap dapat mengajukan dengan datang langsung ke kantor cabang.`,
+
+  "d1": `Dear Tim, 
+Mohon dibantu kendala konsumen berikut :
+
+Nama :
+NIK :
+Nomor HP :
+
+Konsumen terkendala :
+Terima kasih.`,
+
+  "s1": `Persyaratan pengajuan barang :
+1. Usia 21 – 55 tahun
+2. Minimal penghasilan Rp1.800.000 per bulan
+3. KTP
+4. Slip gaji / SKU
+5. Tempat tinggal milik sendiri minimal 1 tahun
+6. Rumah dinas minimal 1 tahun (lampirkan surat)
+7. Kontrak minimal 2 tahun (lampirkan surat sewa)
+8. Kontrak tahunan wajib lampirkan kwitansi & nomor pemilik rumah
+9. Alamat KTP boleh berbeda dengan domisili
+10. Ketentuan lain mengikuti kebijakan KreditPlus`,
+
+  "c3": `Mohon maaf dikarenakan tidak ada respon, maka percakapan ini kami akhiri.
+Jika ada pertanyaan lain, silahkan menghubungi kami kembali di Layanan :
+
+📞 Call Center 1500605 / 021-1500605
+✆ WhatsApp 08118300605
+✉️ Email cs@kreditplus.com
+
+🕛 Jam Operasional :
+Senin - Jum'at
+08.00 WIB - 16.00 WIB
+
+Sabtu
+08.00 WIB - 13.00 WIB
+
+Tanggal Merah / Hari Libur Nasional
+Tidak Beroperasional
+
+Terima kasih telah menghubungi Layanan Hello KreditPlus.
+KreditPlus
+Solusi Kebutuhan Anda`,
+
+  "a1": `Kami lakukan pengecekan pada sistem untuk unit sebagai berikut:
+
+▪️ Unit : {{Nama_Unit/Agunan}}
+▪️ Total tenor angsuran : {{Tenor}} Tenor
+▪️ Angsuran yang telah dibayarkan : {{Tenor}} Tenor
+▪️ Sisa angsuran : {{Tenor}} Tenor
+▪️ Denda keterlambatan : Rp.{{Jika_ada denda/jika_tidak_ada_isi_Strip}}
+
+Informasi di atas mengacu pada data yang tercatat di sistem kami saat ini.
+
+Untuk pengecekan lebih detail, silakan melakukan konfirmasi langsung melalui kantor cabang, agar dapat dijelaskan secara menyeluruh dan akurat.`,
+
+  "-ubah": `Permintaan perubahan data saat ini hanya tersedia melalui layanan Call Center 1500605 atau 021-1500605.
+
+Jam Operasional layanan Call Center:
+
+Senin – Jumat: 08.00 – 16.00 WIB
+Sabtu: 08.00 – 13.00 WIB
+Minggu & Libur Nasional: Tutup`,
+
+  "v3": `Agar kami dapat melakukan pengecekan secara detail,
+mohon untuk menginformasikan data berikut :
+
+1. Nama Lengkap
+2. NIK KTP
+3. Tempat & Tanggal Lahir
+4. Nomor Handphone
+5. Email
+6. Nama Ibu Kandung`,
+
+  "-10": `Yth. Bapak/Ibu
+Terima kasih telah menghubungi KreditPlus Care.
+
+Permintaan perubahan data hanya tersedia di Contact Center 1500605.
+
+Jam Operasional :
+Senin – Jumat : 08.00 – 20.00 WIB
+Sabtu, Minggu & Libur Nasional : 08.00 – 20.00 WIB
+
+Salam Hangat,
+Aditya
+Customer Service Representative
+PT. KB Finansia Multi Finance`,
+
+  "-11": `Yth. Bapak/Ibu
+Terima kasih telah menghubungi KreditPlus Care.
+
+Mohon bantu informasikan data berikut untuk proses verifikasi :
+Nama Lengkap
+NIK KTP
+Tempat & Tanggal Lahir
+Nama Ibu Kandung
+Nomor Handphone
+Nomor Kontrak
+
+Salam Hangat,
+Aditya
+Customer Service Representative
+PT. KB Finansia Multi Finance`,
+
+  "-12": `Yth. Bapak/Ibu
+Terima kasih telah menghubungi KreditPlus Care.
+
+Agar kebutuhan Bapak/Ibu dapat kami bantu tindak lanjuti,
+mohon informasikan secara detail pertanyaan atau keluhan
+yang ingin disampaikan.
+
+Salam Hangat,
+Aditya
+Customer Service Representative
+PT. KB Finansia Multi Finance`,
+
+  "j1": `Jam Operasional Kantor Cabang :
+  
+Senin – Jumat : 08.00 – 15.00
+Sabtu : 08.00 – 12.00
+Minggu & Libur Nasional : Tutup`,
+
+  "area2": `Untuk aktivasi/pembaruan/pengajuan limit, silakan Kakak melakukan pengisian data pembaruan limit melalui aplikasi KreditPlus Mobile.
+
+Mohon dipastikan pada saat pengisian data, Kakak berada di kantor cabang KreditPlus, karena nantinya akan muncul kode aktivasi pada aplikasi yang perlu diinformasikan kepada petugas cabang untuk proses verifikasi.
+
+Sebagai informasi tambahan, mohon dipastikan domisili Kakak.
+Untuk saat ini, wilayah Jabodetabek sedang dalam status stop selling, sehingga pengajuan atau aktivasi limit untuk unit barang belum dapat diproses karena adanya penyesuaian/peningkatan zona.
+
+Apabila Kakak berada di luar wilayah Jabodetabek, proses pengajuan dapat dilanjutkan sesuai ketentuan yang berlaku.
+Namun jika Kakak berdomisili di Jabodetabek, mohon kesediaannya untuk menunggu hingga status pengajuan dibuka kembali.`,
+
+    "denda": `Ketentuan umum denda keterlambatan adalah sebagai berikut:
+
+📱 Elektronik / White Goods
+• Pembiayaan Multiguna: 8% per 15 hari keterlambatan dari jumlah angsuran yang tertunggak
+• Pembiayaan Investasi: 0,5% per hari keterlambatan dari jumlah angsuran yang tertunggak
+
+🏍 Sepeda Motor
+• 0,5% per hari keterlambatan dari jumlah angsuran yang tertunggak
+
+🚗 Mobil
+• 0,25% per hari keterlambatan dari jumlah angsuran yang tertunggak
+
+Besaran denda yang dikenakan akan menyesuaikan jenis kontrak pembiayaan, nominal angsuran, serta jumlah hari keterlambatan, sesuai data yang tercatat di sistem.
+
+Untuk informasi rincian denda secara spesifik, pengecekan dapat dilakukan melalui kantor cabang tempat kontrak terdaftar.` ,
+
+    "bpkb": `Kami informasikan bahwa apabila BPKB diambil secara langsung oleh konsumen yang bersangkutan, dokumen yang perlu disiapkan adalah sebagai berikut:
+
+1. KTP asli
+(digunakan untuk verifikasi identitas, pencocokan fotokopi KTP, dan tanda tangan konsumen)
+
+2. Fotokopi KTP
+
+3. Bukti pembayaran terakhir / bukti pelunasan
+
+Pengambilan BPKB hanya dapat dilakukan oleh konsumen yang terdaftar sesuai data kontrak.
+Untuk memastikan kesiapan dokumen dan status BPKB, konsumen disarankan melakukan konfirmasi terlebih dahulu ke kantor cabang tempat kontrak terdaftar.`,
+    
+  // 👉 kalau mau nambah shortcut tinggal copy baris ini
+};
+
+/* ===============================
+   CORE ENGINE
+================================ */
+const input = document.getElementById("keyword");
+const result = document.getElementById("result");
+const status = document.getElementById("copyStatus");
+let historyList = [];
+const historyEl = document.getElementById("history");
+
+function addHistory(key) {
+  // hindari duplikat
+  historyList = historyList.filter(k => k !== key);
+  historyList.unshift(key);
+
+  // batasi 7 terakhir
+  if (historyList.length > 7) historyList.pop();
+
+  renderHistory();
+}
+
+function renderHistory() {
+  historyEl.innerHTML = "";
+  historyList.forEach(k => {
+    const tag = document.createElement("span");
+    tag.textContent = k;
+    tag.onclick = () => {
+      input.value = k;
+      search();
+    };
+    historyEl.appendChild(tag);
+  });
+}
+
+    
+function search() {
+  const key = input.value.trim().toLowerCase();
+  input.classList.remove("input-error");
+
+  if (!shortcuts[key]) {
+    result.textContent = `Shortcut "${key}" tidak ditemukan.`;
+    input.classList.add("input-error");
+    return;
+  }
+
+  let text = shortcuts[key];
+
+  // SIMPAN HISTORY (INI YANG KEMARIN GA JALAN)
+  addHistory(key);
+
+  // HANDLE {{variable}}
+  const vars = [...text.matchAll(/{{(.*?)}}/g)];
+  vars.forEach(v => {
+    const val = prompt(`Isi ${v[1]}:`) || "";
+    text = text.replace(v[0], val);
+  });
+
+  result.textContent = text;
+  navigator.clipboard.writeText(text);
+
+  // RESET INPUT
+  input.value = "";
+  input.focus();
+
+  // NOTIF COPY
+  status.style.display = "block";
+  setTimeout(() => status.style.display = "none", 2000);
+}
+    input.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    search();
+  }
+});
+function updateDateTime() {
+  const el = document.getElementById("datetime");
+  const now = new Date();
+
+  const optionsDate = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  };
+
+  const date = now.toLocaleDateString("id-ID", optionsDate);
+  const time = now.toLocaleTimeString("id-ID");
+
+  el.textContent = `${date} | ${time} WIB`;
+}
+
+// jalankan langsung & tiap detik
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+/* ======================
+   DATA CABANG LOGIC
+====================== */
+
+let cabangData = [];
+
+Papa.parse(
+  "https://docs.google.com/spreadsheets/d/1lZRUXiieRvOLkv3GNx3QSbW9k6K-aRKZccHBG-iFmfg/export?format=csv&gid=974265388",
+  {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      console.log("CSV rows:", results.data);
+      cabangData = results.data;
+      renderCabang(cabangData);
+    }
+  }
+);
+
+function renderCabang(data) {
+  const tbody = document.querySelector("#tableCabang tbody");
+  tbody.innerHTML = "";
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="4">Data tidak tersedia</td></tr>`;
+    return;
+  }
+
+  data.forEach(r => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r["Cabang/Pos/Kantor Pusat"]}</td>
+        <td>${r["Alamat Cabang/Pos"]}</td>
+        <td>${r["Telpon Cabang/Head Office"]}</td>
+        <td>${r["Area/Regional"] || "-"}</td>
+      </tr>`;
+  });
+}
+
+document.getElementById("searchCabang").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  renderCabang(
+    cabangData.filter(r =>
+      Object.values(r).join(" ").toLowerCase().includes(q)
+    )
+  );
+});
+</script>
+</body>
+</html>
