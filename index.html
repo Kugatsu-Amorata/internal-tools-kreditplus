@@ -758,10 +758,10 @@ function renderCabang(data) {
   data.forEach(r => {
     tbody.innerHTML += `
       <tr>
-        <td>${r["Cabang/Pos/Kantor Pusat"]}</td>
-        <td>${r["Alamat Cabang/Pos"]}</td>
-        <td>${r["Telepon Cabang/Head Office"]}</td>
-        <td>${r["Area/Regional"] || "-"}</td>
+        <td>${r["Cabang"]}</td>
+        <td>${r["Alamat"]}</td>
+        <td>${r["Telepon"]}</td>
+        <td>${r["Area"] || "-"}</td>
       </tr>`;
   });
 }
