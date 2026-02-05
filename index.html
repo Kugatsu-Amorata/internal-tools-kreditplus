@@ -40,6 +40,74 @@ nav button.active {
   font-weight: bold;
   color: #2563EB;
 }
+/* ========== HOME HERO ========== */
+.home-hero {
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
+}
+
+.hero {
+  max-width: 1000px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.badge {
+  display: inline-block;
+  background: #2563EB;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin: 0 0 10px;
+  color: #111827;
+}
+
+.hero h1 span {
+  color: #2563EB;
+}
+
+.hero p {
+  font-size: 16px;
+  color: #374151;
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+/* ========== QUICK ACCESS ========== */
+.quick-access {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #ffffff;
+  padding: 26px;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+  margin: 12px 0 4px;
+  color: #111827;
+}
+
+.card small {
+  color: #6B7280;
+}
 
 /* ================= PAGE ================= */
 .page {
@@ -221,10 +289,41 @@ th {
   <button onclick="showPage('cabang', this)">Data Cabang</button>  
 </nav>
 
-<section id="home" class="page active">
-  <h2>Dashboard Internal KreditPlus</h2>
-  <p>Gunakan menu di atas untuk mengakses Data Karyawan dan Shortcut Contact Center.</p>
+<section id="home" class="page active home-hero">
+  <div class="hero">
+    <span class="badge">INTERNAL TOOL</span>
+
+    <h1>
+      Dashboard Internal <span>KreditPlus</span>
+    </h1>
+
+    <p>
+      Pusat akses data operasional Contact Center & Support.
+      Cepat, rapi, dan real-time.
+    </p>
+
+    <div class="quick-access">
+      <div class="card" onclick="showPage('karyawan', document.querySelectorAll('nav button')[1])">
+        👥
+        <h3>Data Karyawan</h3>
+        <small>Pencarian & filter data</small>
+      </div>
+
+      <div class="card" onclick="showPage('shortcut', document.querySelectorAll('nav button')[2])">
+        ⚡
+        <h3>Shortcut CS</h3>
+        <small>Template respon cepat</small>
+      </div>
+
+      <div class="card" onclick="showPage('cabang', document.querySelectorAll('nav button')[3])">
+        🏢
+        <h3>Data Cabang</h3>
+        <small>Alamat & kontak cabang</small>
+      </div>
+    </div>
+  </div>
 </section>
+
 
 <section id="karyawan" class="page page-karyawan">
   <h1>Data Karyawan</h1>
