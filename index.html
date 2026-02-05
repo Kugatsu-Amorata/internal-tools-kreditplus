@@ -8,6 +8,78 @@
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
+  /* ================= HOME CINEMATIC BACKGROUND ================= */
+.home-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* layer background */
+.home-cinematic {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(#1e293b, #020617);
+  overflow: hidden;
+}
+
+/* gunung */
+.home-cinematic .mountain {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 35%;
+  background-repeat: repeat-x;
+  background-size: contain;
+}
+
+/* layer gunung */
+.home-cinematic .back {
+  background-image: url("mountain-back.png");
+  opacity: 0.15;
+  animation: mountainMove 120s linear infinite;
+}
+
+.home-cinematic .mid {
+  background-image: url("mountain-mid.png");
+  opacity: 0.25;
+  animation: mountainMove 80s linear infinite;
+}
+
+.home-cinematic .front {
+  background-image: url("mountain-front.png");
+  opacity: 0.35;
+  animation: mountainMove 50s linear infinite;
+}
+/* ninja jalan */
+.home-cinematic .ninja {
+  position: absolute;
+  bottom: 34%;
+  left: -120px;
+  width: 90px;
+  height: 120px;
+  background: url("ninja-hatori.png") no-repeat center / contain;
+  animation: ninjaWalk 35s linear infinite;
+  opacity: 0.9;
+}
+
+/* animasi */
+@keyframes mountainMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes ninjaWalk {
+  0% { left: -120px; transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { left: 110%; transform: translateY(0); }
+}
+
+/* pastikan konten di atas background */
+.home-hero > .hero {
+  position: relative;
+  z-index: 1;
+}
 /* ================= GLOBAL ================= */
 body {
   margin: 0;
@@ -40,11 +112,6 @@ nav button.active {
   font-weight: bold;
   color: #2563EB;
 }
-/* ========== HOME HERO ========== */
-.home-hero {
-  background: linear-gradient(135deg, #eef2ff, #f8fafc);
-}
-
 .hero {
   max-width: 1000px;
   margin: auto;
@@ -290,7 +357,18 @@ th {
 </nav>
 
 <section id="home" class="page active home-hero">
+
+  <!-- 🎬 BACKGROUND ANIMASI HOME -->
+  <div class="home-cinematic">
+    <div class="mountain back"></div>
+    <div class="mountain mid"></div>
+    <div class="mountain front"></div>
+    <div class="ninja"></div>
+  </div>
+
+  <!-- KONTEN ASLI -->
   <div class="hero">
+
     <span class="badge">INTERNAL TOOL</span>
 
     <h1>
