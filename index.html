@@ -206,10 +206,10 @@ nav button.active {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55); /* ⬅️ lebih gelap */
+  background: rgba(0,0,0,0.55);
   z-index: 0;
+  pointer-events: none; /* 🔥 INI KUNCINYA */
 }
-
 /* pastikan konten di atas overlay */
 .page-cabang > * {
   position: relative;
@@ -378,12 +378,6 @@ th {
   box-shadow: 0 16px 32px rgba(0,0,0,0.18);
   border-top: 6px solid #2563EB;
 }
-/* ================= FIX OVERLAY CLICK ================= */
-.page::before,
-.page-cabang::before {
-  pointer-events: none;
-}
-
 </style>
 </head>
 
