@@ -179,6 +179,8 @@ nav button.active {
 .page {
   display: none;
   padding: 20px;
+  position: relative;
+  z-index: 1; /* ⬅️ INI KUNCI TERAKHIR */
 }
 .page.active {
   display: block;
@@ -241,6 +243,7 @@ nav button.active {
     rgba(0,0,0,0.35)
   );
   z-index: 0;
+  pointer-events: none; /* ⬅️ INI YANG TERLEWAT */
 }
 .page-cabang table {
   background: rgba(255,255,255,0.96);
