@@ -192,7 +192,34 @@ nav button.active {
   background-repeat: no-repeat;
   position: relative;
 }
+/* ================= DATA CABANG BACKGROUND ================= */
+.page-cabang {
+  background-image: url("assets/bg-data-cabang.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: calc(100vh - 60px);
+  position: relative;
+}
 
+/* overlay agar teks & tabel tetap kebaca */
+.page-cabang::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.7)
+  );
+  z-index: 0;
+}
+
+/* pastikan konten di atas overlay */
+.page-cabang > * {
+  position: relative;
+  z-index: 1;
+}
 /* Shortcut → suasana kantor */
 .page-shortcut {
   background-image: url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d");
@@ -455,7 +482,7 @@ th {
   </div>
 </section>
     
-<section id="cabang" class="page">
+<section id="cabang" class="page page-cabang">
   <h1>Data Cabang KreditPlus</h1>
 
   <input type="search" id="searchCabang"
