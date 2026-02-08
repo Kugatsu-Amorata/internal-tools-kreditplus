@@ -496,9 +496,18 @@ th {
     <input type="search" id="searchCabang"
            placeholder="Cari Cabang / Alamat / Area">
 
-    <table id="tableCabang">
-      ...
-    </table>
+    <table id="tableCabang" style="display:none">
+  <thead>
+    <tr>
+      <th>Cabang</th>
+      <th>Alamat</th>
+      <th>Telepon</th>
+      <th>Area</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
   </div>
 </section>
   
@@ -945,22 +954,25 @@ Papa.parse(
     header: true,
     skipEmptyLines: true,
     complete: function (results) {
-      console.log("CSV rows:", results.data);
-      cabangData = results.data;
-      renderCabang(cabangData);
-    }
-  }
+  console.log("CSV rows:", results.data);
+  cabangData = results.data;
+  // JANGAN render dulu
+}
 );
 
 function renderCabang(data) {
-  const tbody = document.querySelector("#tableCabang tbody");
+  const table = document.getElementById("tableCabang");
+  const tbody = table.querySelector("tbody");
+
   tbody.innerHTML = "";
 
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="4">Data tidak tersedia</td></tr>`;
+    table.style.display = "none";
     return;
   }
 
+  table.style.display = "table"; // ⬅️ tampilkan saat ada hasil
+  
   data.forEach(r => {
     tbody.innerHTML += `
       <tr>
@@ -973,7 +985,14 @@ function renderCabang(data) {
 }
 
 document.getElementById("searchCabang").addEventListener("input", e => {
-  const q = e.target.value.toLowerCase();
+  const q = e.target.value.toLowerCase().trim();
+
+  // ⬅️ INI KUNCI UTAMA
+  if (!q) {
+    document.getElementById("tableCabang").style.display = "none";
+    return;
+  }
+
   renderCabang(
     cabangData.filter(r =>
       Object.values(r).join(" ").toLowerCase().includes(q)
